@@ -1,7 +1,8 @@
-const http = require('http')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+require('dotenv').config() // Needs to be before person model
+const Person = require('./models/person')
 
 const app = express()
 
@@ -39,7 +40,10 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  //response.json(persons)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -102,7 +106,7 @@ app.get('/info', (request, response) => {
     `)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
