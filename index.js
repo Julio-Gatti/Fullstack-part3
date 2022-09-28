@@ -12,8 +12,8 @@ app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 app.use(cors())
 
-morgan.token('body', (req, res) => {
-  return JSON.stringify(req.body)
+morgan.token('body', (request, response) => {
+  return JSON.stringify(request.body)
 })
 
 app.post('/api/persons', (request, response) => {
@@ -57,7 +57,7 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end()
@@ -74,6 +74,21 @@ app.get('/api/persons/:id', (request, response, next) => {
       } else {
         response.status(404).end()
       }
+    })
+    .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson.toJSON())
     })
     .catch(error => next(error))
 })
