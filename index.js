@@ -82,6 +82,17 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+app.get('/info', (request, response) => {
+  const date = new Date()
+
+  Person.find({}).then(p => {
+    response.send(`
+    <p>The phonebook has info for ${p.length} people</p>
+    <p>${date}</p>
+  `)
+  })
+})
+
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
 
@@ -119,15 +130,6 @@ const errorHandler = (error, request, response, next) => {
 }
 
 app.use(errorHandler) // After all other middleware registrations
-
-/*app.get('/info', (request, response) => {
-  const date = new Date()
-
-  response.send(`
-    <p>The phonebook has info for ${persons.length} people</p>
-    <p>${date}</p>
-  `)
-})*/
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
